@@ -1,50 +1,74 @@
 package config
 
-import (
-	"fmt"
-	"path/filepath"
-	"strings"
+import "adeia/pkg/util/constants"
 
-	"adeia/internal/util/constants"
+// envOverrides holds all environment value keys for overriding the config.
+var envOverrides = map[string]string{
+	"server.jwt_secret": constants.EnvServerJWTSecretKey,
 
-	"github.com/spf13/viper"
-)
+	"mailer.username": constants.EnvMailerUsernameKey,
+	"mailer.password": constants.EnvMailerPasswordKey,
 
-// Load loads config from confPath into viper. The file must be readable and
-// must contain valid YAML.
-func Load(confPath string) (*Config, error) {
-	v := viper.New()
-	basePath := filepath.Base(confPath)
+	"database.dbname":   constants.EnvDBNameKey,
+	"database.user":     constants.EnvDBUserKey,
+	"database.password": constants.EnvDBPasswordKey,
+	"database.host":     constants.EnvDBHostKey,
+	"database.port":     constants.EnvDBPortKey,
 
-	v.SetConfigName(strings.TrimSuffix(basePath, filepath.Ext(basePath)))
-	v.AddConfigPath(filepath.Dir(confPath))
-	v.SetConfigType("yaml")
-
-	// set env overrides for secrets
-	setEnvOverrides(v, constants.EnvPrefix, envOverrides)
-
-	// read config
-	err := v.ReadInConfig()
-	if err != nil {
-		return nil, fmt.Errorf("cannot read config: %v", err)
-	}
-
-	// unmarshal config
-	var c Config
-	err = v.Unmarshal(&c)
-	if err != nil {
-		return nil, fmt.Errorf("cannot unmarshal to config struct: %v", err)
-	}
-
-	return &c, nil
+	"cache.host": constants.EnvCacheHostKey,
+	"cache.port": constants.EnvCachePortKey,
 }
 
-// setEnvOverrides sets the keys of env variables that can override the config, in viper.
-func setEnvOverrides(v *viper.Viper, envPrefix string, overrides map[string]string) {
-	v.SetEnvPrefix(envPrefix)
-	for key, val := range overrides {
-		// The only error that is returned from this method is when len(input) == 0.
-		// So we can safely ignore it.
-		_ = v.BindEnv(key, val)
-	}
+// Config represents the overall configuration.
+type Config struct {
+	CacheConfig  `mapstructure:"cache"`
+	DBConfig     `mapstructure:"database"`
+	LoggerConfig `mapstructure:"logger"`
+	MailerConfig `mapstructure:"mailer"`
+	ServerConfig `mapstructure:"server"`
+}
+
+// CacheConfig represents the config for the cache.
+type CacheConfig struct {
+	Network  string `mapstructure:"network"`
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	ConnSize int    `mapstructure:"connsize"`
+}
+
+// DBConfig represents the config for the database.
+type DBConfig struct {
+	Driver      string `mapstructure:"driver"`
+	DBName      string `mapstructure:"dbname"`
+	User        string `mapstructure:"user"`
+	Password    string `mapstructure:"password"`
+	Host        string `mapstructure:"host"`
+	Port        int    `mapstructure:"port"`
+	SSLMode     string `mapstructure:"sslmode"`
+	SSLCert     string `mapstructure:"sslcert,omitempty"`
+	SSLKey      string `mapstructure:"sslkey,omitempty"`
+	SSLRootCert string `mapstructure:"sslrootcert,omitempty"`
+}
+
+// LoggerConfig represents the config for the logger.
+type LoggerConfig struct {
+	Level string   `mapstructure:"level"`
+	Paths []string `mapstructure:"paths"`
+}
+
+// MailerConfig represents the config for the mailer.
+type MailerConfig struct {
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	SMTPHost string `mapstructure:"smtp_host"`
+	SMTPPort int    `mapstructure:"smtp_port"`
+}
+
+// ServerConfig represents the config for the server.
+type ServerConfig struct {
+	Host            string `mapstructure:"host,omitempty"`
+	Port            int    `mapstructure:"port"`
+	RateLimitRate   int    `mapstructure:"ratelimit_rate"`
+	RateLimitWindow int    `mapstructure:"ratelimit_window"`
+	JWTSecret       string `mapstructure:"jwt_secret"`
 }
