@@ -38,6 +38,7 @@ jobs:
     - script: make test-coverage
 
     - language: python
+      if: tag IS present
       os: linux
       dist: focal
       python: 3.8
@@ -60,3 +61,4 @@ jobs:
         repo: arkn98/adeia
         on:
           tags: true
+          branch: master
