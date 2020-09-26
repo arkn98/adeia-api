@@ -1,85 +1,74 @@
 package config
 
-import (
-	"errors"
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
-	"sync"
+import "adeia/pkg/util/constants"
 
-	"adeia-api/internal/util/constants"
+// envOverrides holds all environment value keys for overriding the config.
+var envOverrides = map[string]string{
+	"server.jwt_secret": constants.EnvServerJWTSecretKey,
 
-	"github.com/spf13/viper"
-)
+	"mailer.username": constants.EnvMailerUsernameKey,
+	"mailer.password": constants.EnvMailerPasswordKey,
 
-var (
-	// initConf is used to ensure that config is initialized only once.
-	initConf = new(sync.Once)
+	"database.dbname":   constants.EnvDBNameKey,
+	"database.user":     constants.EnvDBUserKey,
+	"database.password": constants.EnvDBPasswordKey,
+	"database.host":     constants.EnvDBHostKey,
+	"database.port":     constants.EnvDBPortKey,
 
-	// envOverrides holds all environment value keys for overriding the config.
-	envOverrides = map[string]string{
-		// server overrides
-		"server.jwt_secret": constants.EnvServerJWTSecretKey,
-
-		// mailer overrides
-		"mailer.username": constants.EnvMailerUsernameKey,
-		"mailer.password": constants.EnvMailerPasswordKey,
-
-		// database env overrides
-		"database.dbname":   constants.EnvDBNameKey,
-		"database.user":     constants.EnvDBUserKey,
-		"database.password": constants.EnvDBPasswordKey,
-		"database.host":     constants.EnvDBHostKey,
-		"database.port":     constants.EnvDBPortKey,
-
-		// cache env overrides
-		"cache.host": constants.EnvCacheHostKey,
-		"cache.port": constants.EnvCachePortKey,
-	}
-)
-
-func setEnvOverrides() {
-	viper.SetEnvPrefix(constants.EnvPrefix)
-	for k, v := range envOverrides {
-		// The only error that is returned from this method is when len(input) == 0.
-		// So we can safely ignore it.
-		_ = viper.BindEnv(k, v)
-	}
+	"cache.host": constants.EnvCacheHostKey,
+	"cache.port": constants.EnvCachePortKey,
 }
 
-// Load loads YAML from file specified by EnvConfPathKey into viper.
-// The file must be a readable file containing valid YAML.
-func Load() error {
-	err := errors.New("config already loaded")
-
-	initConf.Do(func() {
-		err = nil
-
-		confPath := getEnv(constants.EnvConfPathKey, "config/config.yaml")
-		basePath := filepath.Base(confPath)
-
-		viper.SetConfigName(strings.TrimSuffix(basePath, filepath.Ext(basePath)))
-		viper.AddConfigPath(filepath.Dir(confPath))
-		viper.SetConfigType("yaml")
-
-		// set env overrides for secrets
-		setEnvOverrides()
-
-		e := viper.ReadInConfig()
-		if e != nil {
-			err = fmt.Errorf("cannot read config: %v", e)
-			return
-		}
-	})
-
-	return err
+// Config represents the overall configuration.
+type Config struct {
+	CacheConfig  `mapstructure:"cache"`
+	DBConfig     `mapstructure:"database"`
+	LoggerConfig `mapstructure:"logger"`
+	MailerConfig `mapstructure:"mailer"`
+	ServerConfig `mapstructure:"server"`
 }
 
-// getEnv returns value from env if key is present, otherwise returns fallback.
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
+// CacheConfig represents the config for the cache.
+type CacheConfig struct {
+	Network  string `mapstructure:"network"`
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	ConnSize int    `mapstructure:"connsize"`
+}
+
+// DBConfig represents the config for the database.
+type DBConfig struct {
+	Driver      string `mapstructure:"driver"`
+	DBName      string `mapstructure:"dbname"`
+	User        string `mapstructure:"user"`
+	Password    string `mapstructure:"password"`
+	Host        string `mapstructure:"host"`
+	Port        int    `mapstructure:"port"`
+	SSLMode     string `mapstructure:"sslmode"`
+	SSLCert     string `mapstructure:"sslcert,omitempty"`
+	SSLKey      string `mapstructure:"sslkey,omitempty"`
+	SSLRootCert string `mapstructure:"sslrootcert,omitempty"`
+}
+
+// LoggerConfig represents the config for the logger.
+type LoggerConfig struct {
+	Level string   `mapstructure:"level"`
+	Paths []string `mapstructure:"paths"`
+}
+
+// MailerConfig represents the config for the mailer.
+type MailerConfig struct {
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	SMTPHost string `mapstructure:"smtp_host"`
+	SMTPPort int    `mapstructure:"smtp_port"`
+}
+
+// ServerConfig represents the config for the server.
+type ServerConfig struct {
+	Host            string `mapstructure:"host,omitempty"`
+	Port            int    `mapstructure:"port"`
+	RateLimitRate   int    `mapstructure:"ratelimit_rate"`
+	RateLimitWindow int    `mapstructure:"ratelimit_window"`
+	JWTSecret       string `mapstructure:"jwt_secret"`
 }
