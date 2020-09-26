@@ -4,7 +4,7 @@ cache:
   directories:
     - $GOPATH/pkg/mod
 
-dist: bionic
+dist: focal
 
 go:
   - 1.15.x
@@ -33,9 +33,36 @@ script:
 jobs:
   fast_finish: true
   allow_failures:
-    - env: JOB=test-coverage
+      - env: JOB=test-coverage
   exclude:
     - os: osx
       env: JOB=test-coverage
     - os: windows
       env: JOB=test-coverage
+
+  include:
+    - language: python
+      if: tag IS present
+      os: linux
+      dist: focal
+      python: 3.8
+      cache:
+        directories:
+          - .venv
+      before_install:
+        - pip install poetry
+      install:
+        - poetry config settings.virtualenvs.in-project true
+        - poetry install
+      script:
+        - make docs-build
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GHPAGES_DEPLOY_TOKEN
+        keep_history: true
+        local_dir: docs-build
+        repo: arkn98/adeia
+        on:
+          tags: true
+          branch: master
