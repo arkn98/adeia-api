@@ -29,4 +29,3 @@
 
 # ignore mkdocs-related files
 .venv
-docs-build
