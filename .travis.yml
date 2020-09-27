@@ -1,9 +1,34 @@
-stages:
-  - name: build-and-test
-    if: tag IS blank
+language: go
 
-  - name: deploy-docs
-    if: tag IS present
+go:
+  - 1.15.x
+
+os:
+  - linux
+  - osx
+  - windows
+
+dist: focal
+
+cache:
+  directories:
+    - $GOPATH/pkg/mod
+
+env:
+  jobs:
+    - JOB=test
+    - JOB=build
+
+before_install:
+  - if [ $TRAVIS_OS_NAME == "windows" ]; then
+      chocolatey install make;
+    fi
+
+script:
+  - 'if [ "${JOB}" = "test" ]; then make test; fi'
+  - 'if [ "${JOB}" = "build" ]; then make build; fi'
+  - 'if [ "${JOB}" = "test-coverage" ]; then make test-coverage; fi'
+  - 'if [ "${JOB}" = "docs-build" ]; then make docs-build; fi'
 
 jobs:
   fast_finish: true
@@ -11,63 +36,38 @@ jobs:
   allow_failures:
     - env: JOB=test-coverage
 
-  include:
-    - stage: build-and-test
-      language: go
-      go:
-        - 1.15.x
-      os:
-        - linux
-        - osx
-        - windows
-      dist: focal
-      cache:
-        directories:
-          - $GOPATH/pkg/mod
+  exclude:
+    - if: tag IS present
       env:
-        matrix:
-          - JOB=test
-          - JOB=build
-      before_script:
-        - if [ $TRAVIS_OS_NAME == "windows" ]; then
-            chocolatey install make;
-          fi
-      script:
-        - 'if [ "${JOB}" = "test" ]; then make test; fi'
-        - 'if [ "${JOB}" = "build" ]; then make build; fi'
+        - JOB=test
+        - JOB=build
+        - JOB=test-coverage
 
-    - stage: build-and-test
-      os: linux
-      language: go
-      cache:
-        directories:
-          - $GOPATH/pkg/mod
-      go:
-        - 1.15.x
+    - if: tag IS absent
+      env:
+        - JOB=docs-build
+
+  include:
+    - os: linux
       dist: focal
       env: JOB=test-coverage
-      script:
-        - make test-coverage
 
-    - stage: deploy-docs
+    - os: linux
+      dist: focal
       language: python
       python: 3.8
-      os: linux
-      dist: focal
       cache:
         directories:
           - .venv
-      env: JOB=deploy-docs
+      env: JOB=docs-build
       before_install:
         - pip install poetry
       install:
         - poetry config virtualenvs.in-project true
         - poetry install
-      script:
-        - make docs-build
       deploy:
         edge: true
-        provider: pages:git
+        provider: pages
         cleanup: false
         token: $GHPAGES_DEPLOY_TOKEN
         keep_history: true
