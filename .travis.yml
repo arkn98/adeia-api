@@ -52,7 +52,7 @@ jobs:
       before_install:
         - pip install poetry
       install:
-        - poetry config settings.virtualenvs.in-project true
+        - poetry config virtualenvs.in-project true
         - poetry install
       script:
         - make docs-build

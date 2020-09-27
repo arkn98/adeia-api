@@ -1,7 +1,7 @@
 adeia
 ======================
-[![Build Status](https://travis-ci.com/arkn98/adeia.svg?branch=develop)](https://travis-ci.com/arkn98/adeia)
-[![Coverage](https://img.shields.io/codecov/c/gh/arkn98/adeia/develop)](https://codecov.io/gh/arkn98/adeia)
+[![Build Status](https://travis-ci.com/arkn98/adeia.svg)](https://travis-ci.com/arkn98/adeia)
+[![Coverage](https://img.shields.io/codecov/c/gh/arkn98/adeia)](https://codecov.io/gh/arkn98/adeia)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![Go Report Card](https://goreportcard.com/badge/github.com/arkn98/adeia)](https://goreportcard.com/report/github.com/arkn98/adeia)
 
