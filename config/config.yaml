@@ -1,0 +1,38 @@
+server:
+  host: ""                        # empty string to listen on all interfaces
+  port: 5000
+  ratelimit_rate: 10              # no. of requests allowed per IP, per second
+  ratelimit_window: 30            # (in seconds) cleanup window
+  jwt_secret: secret
+
+logger:
+  level: debug
+  paths:
+    - stdout
+
+mailer:
+  username: example@example.com   # email ID to use for sending email notifications
+  password: password              # use an application-password (for example, an app-password from Gmail)
+  smtp_host: smtp.gmail.com       # smtp host of email provider
+  smtp_port: 587                  # use the TLS/SSL port
+
+cache:
+  network: tcp
+  host: 127.0.0.1
+  port: 6379
+  connsize: 10
+
+database:
+  driver: pgx   # only pgx will work as of now!
+  dbname: test
+  user: dev
+  password: password
+  host: localhost
+  port: 5432
+  sslmode: disable
+  # ignore the following, if sslmode is 'disable'
+  # for more info,
+  # see: https://pkg.go.dev/github.com/lib/pq?tab=doc#hdr-Connection_String_Parameters
+  sslcert: path-to-sslcert
+  sslkey: path-to-sslkey
+  sslrootcert: path-to-sslrootcert

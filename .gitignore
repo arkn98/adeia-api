@@ -26,3 +26,7 @@
 
 # remove IDE directory
 .idea
+
+# ignore mkdocs-related files
+.venv
+docs-build
