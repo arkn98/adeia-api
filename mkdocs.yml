@@ -1,8 +1,8 @@
 site_name: Adeia Documentation
 site_author: arkn98
 
-repo_name: arkn98/adeia-api
-repo_url: https://github.com/arkn98/adeia-api
+repo_name: arkn98/adeia
+repo_url: https://github.com/arkn98/adeia
 edit_uri: ""
 
 site_dir: docs-build
@@ -13,7 +13,7 @@ theme:
   font: false
 
   features:
-    - tabs
+    - navigation.tabs
 
   palette:
     scheme: preference
@@ -23,7 +23,9 @@ theme:
 nav:
   - Home: index.md
   - API Reference:
-      - Leave type: api-reference/leave-type.md
+      - Resources:
+        - User: api-reference/user.md
+        - Leave type: api-reference/leave-type.md
 
 extra_css:
   - assets/fonts/fonts.css
@@ -36,10 +38,13 @@ plugins:
   - git-revision-date-localized:
       type: timeago
       fallback_to_build_date: true
+  - macros:
+      module_name: docs
 
 markdown_extensions:
   - toc:
       permalink: true
+      toc_depth: 3
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
@@ -48,13 +53,16 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.tabbed
   - pymdownx.superfences
+  - pymdownx.details
   - pymdownx.tasklist
   - attr_list
   - def_list
+  - abbr
   - meta
+  - admonition
 
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/arkn98/adeia-api
+      link: https://github.com/arkn98/adeia
       name: GitHub repository

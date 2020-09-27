@@ -159,11 +159,27 @@ mkdocs = ">=1.0"
 
 [[package]]
 category = "main"
+description = "Unleash the power of MkDocs with macros and variables"
+name = "mkdocs-macros-plugin"
+optional = false
+python-versions = ">=3.5"
+version = "0.4.16"
+
+[package.dependencies]
+jinja2 = "*"
+mkdocs = ">=0.17"
+mkdocs-material = "*"
+python-dateutil = "*"
+pyyaml = "*"
+termcolor = "*"
+
+[[package]]
+category = "main"
 description = "A Material Design theme for MkDocs"
 name = "mkdocs-material"
 optional = false
 python-versions = "*"
-version = "5.5.12"
+version = "6.0.0"
 
 [package.dependencies]
 Pygments = ">=2.4"
@@ -178,7 +194,7 @@ description = "Extension pack for Python Markdown."
 name = "mkdocs-material-extensions"
 optional = false
 python-versions = ">=3.5"
-version = "1.0"
+version = "1.0.1"
 
 [package.dependencies]
 mkdocs-material = ">=5.0.0"
@@ -212,7 +228,7 @@ description = "Pygments is a syntax highlighting package written in Python."
 name = "pygments"
 optional = false
 python-versions = ">=3.5"
-version = "2.6.1"
+version = "2.7.1"
 
 [[package]]
 category = "main"
@@ -224,6 +240,17 @@ version = "8.0"
 
 [package.dependencies]
 Markdown = ">=3.2"
+
+[[package]]
+category = "main"
+description = "Extensions to the standard Python datetime module"
+name = "python-dateutil"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+version = "2.8.1"
+
+[package.dependencies]
+six = ">=1.5"
 
 [[package]]
 category = "main"
@@ -268,6 +295,14 @@ version = "3.0.4"
 
 [[package]]
 category = "main"
+description = "ANSII Color formatting for output in terminal."
+name = "termcolor"
+optional = false
+python-versions = "*"
+version = "1.1.0"
+
+[[package]]
+category = "main"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
 name = "tornado"
 optional = false
@@ -287,7 +322,7 @@ version = "4.48.2"
 dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
 
 [metadata]
-content-hash = "28f52ff789bc30695db34d2869aa1dd26b5a475f1c8e8a9ea87547db8615f230"
+content-hash = "9a13f7d72441d806962cf73908b8ec51e0aa89c3cb2a9e23f243221b222b23d3"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -373,24 +408,32 @@ mkdocs-git-revision-date-localized-plugin = [
     {file = "mkdocs-git-revision-date-localized-plugin-0.7.tar.gz", hash = "sha256:2ddfd2e390c512d9f8fcd01746fb6516985f6f6f22933789168775b4abc6d08c"},
     {file = "mkdocs_git_revision_date_localized_plugin-0.7-py3-none-any.whl", hash = "sha256:3e40126fc5d48c9d3af0f1070dbb1c781239b716b7e217a961b1eef1bffd123f"},
 ]
+mkdocs-macros-plugin = [
+    {file = "mkdocs-macros-plugin-0.4.16.tar.gz", hash = "sha256:cdc9c46572acab0c30e4b34e84c49f8ebc6d2800cea35fb3e8c20593db7f1caf"},
+    {file = "mkdocs_macros_plugin-0.4.16-py3-none-any.whl", hash = "sha256:b650741d1664df2eb8687fe5d8281962c2c16ba3c8344796355a3a0317cef45f"},
+]
 mkdocs-material = [
-    {file = "mkdocs-material-5.5.12.tar.gz", hash = "sha256:d956fba4b3e27b40490aa457678083e0c26fe4ea1b307d8322c3df3412a0b485"},
-    {file = "mkdocs_material-5.5.12-py2.py3-none-any.whl", hash = "sha256:9b2225af305668f422a01d4b41ddb7ebb938b1c43a0dde7aae3b00475e6c9ae3"},
+    {file = "mkdocs-material-6.0.0.tar.gz", hash = "sha256:3607ea20b0945e1cb04b0f005909bec86bad6d01874a66bc8efef5f670bff44a"},
+    {file = "mkdocs_material-6.0.0-py2.py3-none-any.whl", hash = "sha256:c2ca3b931afd1a044efe17cc4d0f2d63f2daeb661dadb853c71f54ed15128aae"},
 ]
 mkdocs-material-extensions = [
-    {file = "mkdocs-material-extensions-1.0.tar.gz", hash = "sha256:17d7491e189af75700310b7ec33c6c48a22060b8b445001deca040cb60471cde"},
-    {file = "mkdocs_material_extensions-1.0-py3-none-any.whl", hash = "sha256:09569c3694b5acc1e8334c9730e52b4bcde65fc9d613cc20e49af131ef1a9ca0"},
+    {file = "mkdocs-material-extensions-1.0.1.tar.gz", hash = "sha256:6947fb7f5e4291e3c61405bad3539d81e0b3cd62ae0d66ced018128af509c68f"},
+    {file = "mkdocs_material_extensions-1.0.1-py3-none-any.whl", hash = "sha256:d90c807a88348aa6d1805657ec5c0b2d8d609c110e62b9dce4daf7fa981fa338"},
 ]
 nltk = [
     {file = "nltk-3.5.zip", hash = "sha256:845365449cd8c5f9731f7cb9f8bd6fd0767553b9d53af9eb1b3abf7700936b35"},
 ]
 pygments = [
-    {file = "Pygments-2.6.1-py3-none-any.whl", hash = "sha256:ff7a40b4860b727ab48fad6360eb351cc1b33cbf9b15a0f689ca5353e9463324"},
-    {file = "Pygments-2.6.1.tar.gz", hash = "sha256:647344a061c249a3b74e230c739f434d7ea4d8b1d5f3721bc0f3558049b38f44"},
+    {file = "Pygments-2.7.1-py3-none-any.whl", hash = "sha256:307543fe65c0947b126e83dd5a61bd8acbd84abec11f43caebaf5534cbc17998"},
+    {file = "Pygments-2.7.1.tar.gz", hash = "sha256:926c3f319eda178d1bd90851e4317e6d8cdb5e292a3386aac9bd75eca29cf9c7"},
 ]
 pymdown-extensions = [
     {file = "pymdown-extensions-8.0.tar.gz", hash = "sha256:440b0db9823b89f9917482ce3ab3d32ac18e60f2e186770ac37836830d5e7256"},
     {file = "pymdown_extensions-8.0-py2.py3-none-any.whl", hash = "sha256:c3b18b719adc3a441c4edbcf691157998dbd333384a8e2caf0690985a6e586f0"},
+]
+python-dateutil = [
+    {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
+    {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
 pytz = [
     {file = "pytz-2020.1-py2.py3-none-any.whl", hash = "sha256:a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed"},
@@ -439,6 +482,9 @@ six = [
 smmap = [
     {file = "smmap-3.0.4-py2.py3-none-any.whl", hash = "sha256:54c44c197c819d5ef1991799a7e30b662d1e520f2ac75c9efbeb54a742214cf4"},
     {file = "smmap-3.0.4.tar.gz", hash = "sha256:9c98bbd1f9786d22f14b3d4126894d56befb835ec90cef151af566c7e19b5d24"},
+]
+termcolor = [
+    {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
 ]
 tornado = [
     {file = "tornado-6.0.4-cp35-cp35m-win32.whl", hash = "sha256:5217e601700f24e966ddab689f90b7ea4bd91ff3357c3600fa1045e26d68e55d"},

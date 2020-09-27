@@ -6,8 +6,9 @@ authors = ["arkn98 <20590666+arkn98@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-mkdocs-material = "^5.5.12"
 mkdocs-git-revision-date-localized-plugin = "^0.7"
+mkdocs-material = "^6.0.0"
+mkdocs-macros-plugin = "^0.4.16"
 
 [tool.poetry.dev-dependencies]
 
