@@ -38,14 +38,16 @@ jobs:
 
   exclude:
     - if: tag IS present
-      env:
-        - JOB=test
-        - JOB=build
-        - JOB=test-coverage
+      env: JOB=test
 
-    - if: tag IS absent
-      env:
-        - JOB=docs-build
+    - if: tag IS present
+      env: JOB=build
+
+    - if: tag IS present
+      env: JOB=test-coverage
+
+    - if: tag IS blank
+      env: JOB=docs-build
 
   include:
     - os: linux
@@ -57,13 +59,14 @@ jobs:
       language: python
       python: 3.8
       cache:
+        pip: true
         directories:
           - .venv
       env: JOB=docs-build
       before_install:
         - pip install poetry
-      install:
         - poetry config virtualenvs.in-project true
+      install:
         - poetry install
       deploy:
         edge: true
