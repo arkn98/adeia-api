@@ -36,7 +36,14 @@ jobs:
         - 'if [ "${JOB}" = "test" ]; then make test; fi'
         - 'if [ "${JOB}" = "build" ]; then make build; fi'
 
-    - os: linux
+    - stage: build-and-test
+      os: linux
+      language: go
+      cache:
+        directories:
+          - $GOPATH/pkg/mod
+      go:
+        - 1.15.x
       dist: focal
       env: JOB=test-coverage
       script:
@@ -59,8 +66,10 @@ jobs:
       script:
         - make docs-build
       deploy:
-        provider: pages
-        github_token: $GHPAGES_DEPLOY_TOKEN
+        edge: true
+        provider: pages:git
+        cleanup: false
+        token: $GHPAGES_DEPLOY_TOKEN
         keep_history: true
         local_dir: docs-build
         repo: arkn98/adeia
