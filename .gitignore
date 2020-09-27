@@ -29,6 +29,4 @@
 
 # ignore mkdocs-related files
 .venv
-poetry.lock
-pyproject.toml
 docs-build
