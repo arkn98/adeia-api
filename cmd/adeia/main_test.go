@@ -13,25 +13,21 @@ import (
 
 func TestGetEnv(t *testing.T) {
 	t.Run("return fallback if key is not set", func(t *testing.T) {
-		t.Parallel()
-
 		want := "bar"
-		key := "DUMMY_KEY"
+		key := "DUMMY_KEY1"
 		_ = os.Unsetenv(key)
-		got := getEnv(key, "bar")
+		got := getEnv(key, want)
 		assert.Equal(t, want, got)
 	})
 
 	t.Run("return value from env if key is set", func(t *testing.T) {
-		t.Parallel()
-
-		key := "DUMMY_KEY"
+		key := "DUMMY_KEY2"
 		want := "foo"
 		_ = os.Setenv(key, want)
 		defer func() {
 			_ = os.Unsetenv(key)
 		}()
-		got := getEnv("DUMMY_KEY", "bar")
+		got := getEnv(key, "bar")
 		assert.Equal(t, want, got)
 	})
 }
