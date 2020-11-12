@@ -97,7 +97,7 @@ func TestRespond(t *testing.T) {
 	t.Run("respond with error", func(t *testing.T) {
 		t.Parallel()
 
-		want := `{"error":{"type":"TEST_ERROR","code":"TEST_ERROR_CODE","message":"test error"}}`
+		want := `{"error":{"error_type":"TEST_ERROR","code":"TEST_ERROR_CODE","message":"test error"}}`
 		w := httptest.NewRecorder()
 		payload := &response.Error{
 			HTTPStatusCode: http.StatusInternalServerError,
