@@ -7,15 +7,12 @@ package middleware
 import "net/http"
 
 // Func represents a middleware function.
-type Func func(h http.Handler) http.Handler
+type Func func(http.Handler) http.Handler
 
 // FuncChain is a slice of Funcs, representing the middleware chain.
 type FuncChain struct {
 	funcs []Func
 }
-
-// Nil represents an empty middleware chain.
-var Nil = FuncChain{}
 
 // NewChain creates a new middleware chain.
 func NewChain(funcs ...Func) FuncChain {
@@ -37,4 +34,9 @@ func (c *FuncChain) Append(funcs ...Func) FuncChain {
 	newChain = append(newChain, funcs...)
 
 	return FuncChain{newChain}
+}
+
+// Chain returns the slice of funcs stored in the FuncChain.
+func (c *FuncChain) Chain() []Func {
+	return c.funcs
 }

@@ -1,0 +1,159 @@
+openapi: 3.0.3
+
+info:
+  title: adeia
+  description: API for Adeia, a leave management system for educational institutions
+  license:
+    name: Mozilla Public License 2.0
+    url: https://www.mozilla.org/en-US/MPL/2.0/
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:{port}/{apiVersion}
+    description: Local dev setup
+    variables:
+      port:
+        enum:
+          - '5000'
+        default: '5000'
+      apiVersion:
+        enum:
+          - v1
+        default: v1
+
+paths:
+  /users:
+    post:
+      description: Create a new User if it does not already exist
+      tags:
+        - create
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - designation
+              properties:
+                name:
+                  type: string
+                employee_id:
+                  type: string
+                email:
+                  type: string
+                designation:
+                  type: string
+      responses:
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaTypeResponse'
+        '400':
+          $ref: '#/components/responses/InvalidRequestResponse'
+        '500':
+          $ref: '#/components/responses/APIErrResponse'
+        '201':
+          description: A new User is created successfully
+          headers:
+            Location:
+              description: URL for the newly created User
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      employee_id:
+                        type: string
+                      name:
+                        type: string
+                      email:
+                        type: string
+                      designation:
+                        type: string
+                      is_activated:
+                        type: boolean
+
+components:
+  schemas:
+    ValidationError:
+      type: object
+      additionalProperties:
+        type: string
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - error_type
+            - message
+          properties:
+            error_type:
+              type: string
+            code:
+              type: string
+            message:
+              type: string
+            validation_errors:
+              type: array
+              items:
+                $ref: '#/components/schemas/ValidationError'
+
+  responses:
+    UnsupportedMediaTypeResponse:
+      description: >-
+        Response returned when the request Content-Type is anything other
+        than "application/json"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNSUPPORTED_MEDIA_TYPE
+            message: Content-Type must be application/json without any parameters
+
+    InvalidRequestResponse:
+      description: Response returned when a bad request is received
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            invalid_request:
+              value:
+                code: INVALID_REQUEST
+                message: Request has invalid parameters
+            validation_failed:
+              value:
+                code: VALIDATION_FAILED
+                message: Validation failed for some fields
+                validation_errors:
+                  email: Email is not valid
+                  password: Password must be atleast 8 characters long
+
+    APIErrResponse:
+      description: Response returned when an internal server error occurs
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: API_ERROR
+            message: Request body is malformed
+
+
+externalDocs:
+  url: https://arkn98.github.io/adeia/
