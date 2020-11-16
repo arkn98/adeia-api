@@ -122,8 +122,9 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            code: UNSUPPORTED_MEDIA_TYPE
-            message: Content-Type must be application/json without any parameters
+            error:
+              code: UNSUPPORTED_MEDIA_TYPE
+              message: Content-Type must be application/json without any parameters
 
     InvalidRequestResponse:
       description: Response returned when a bad request is received
@@ -134,15 +135,17 @@ components:
           examples:
             invalid_request:
               value:
-                code: INVALID_REQUEST
-                message: Request has invalid parameters
+                error:
+                  code: INVALID_REQUEST
+                  message: Request has invalid parameters
             validation_failed:
               value:
-                code: VALIDATION_FAILED
-                message: Validation failed for some fields
-                validation_errors:
-                  email: Email is not valid
-                  password: Password must be atleast 8 characters long
+                error:
+                  code: VALIDATION_FAILED
+                  message: Validation failed for some fields
+                  validation_errors:
+                    email: Email is not valid
+                    password: Password must be atleast 8 characters long
 
     APIErrResponse:
       description: Response returned when an internal server error occurs
@@ -151,8 +154,9 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            code: API_ERROR
-            message: Request body is malformed
+            error:
+              code: API_ERROR
+              message: Request body is malformed
 
 
 externalDocs:
