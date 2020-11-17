@@ -14,10 +14,12 @@ import (
 	"time"
 
 	"adeia/internal/config"
+	"adeia/pkg/constants"
+	mdlware "adeia/pkg/http/middleware"
 	"adeia/pkg/log"
-	"adeia/pkg/util/constants"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 // Controller is the interface for all methods of the controllers.
@@ -31,6 +33,7 @@ type Server struct {
 	config      *config.ServerConfig
 	controllers []Controller
 	log         log.Logger
+	middleware  mdlware.FuncChain
 	srv         chi.Router
 }
 
@@ -41,7 +44,25 @@ func New(conf *config.ServerConfig, log log.Logger, controllers ...Controller) *
 		config:      conf,
 		controllers: controllers,
 		log:         log,
-		srv:         chi.NewRouter(),
+		middleware: mdlware.NewChain(
+			middleware.Timeout(5 * time.Second),
+		),
+		srv: chi.NewRouter(),
+	}
+}
+
+// Start starts the server.
+func (s *Server) Start() {
+	s.AddGlobalMiddleware()
+	s.BindControllers()
+	s.Serve()
+}
+
+// AddGlobalMiddleware applies all of the middleware funcs in the chain in-order
+// to the handler.
+func (s *Server) AddGlobalMiddleware() {
+	for _, m := range s.middleware.Chain() {
+		s.srv = s.srv.With(m)
 	}
 }
 
@@ -68,25 +89,25 @@ func (s *Server) Serve() {
 	}
 
 	// catch server errors in a channel
-	serverErrs := make(chan error, 1)
+	errChan := make(chan error, 1)
 
 	go func() {
 		s.log.Infof("starting server on %q", addr)
-		serverErrs <- srv.ListenAndServe()
+		errChan <- srv.ListenAndServe()
 	}()
 
-	// chan to listen for ctrl+c, SIGTERM
+	// chan to listen for SIGTERM & SIGKILL
 	interruptChan := make(chan os.Signal, 1)
-	signal.Notify(interruptChan, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(interruptChan, os.Interrupt, os.Kill, syscall.SIGTERM)
 
-	// gracefully shutdown server
 	select {
-	case err := <-serverErrs:
+	case err := <-errChan:
 		if err != http.ErrServerClosed {
 			s.log.Errorf("error while serving: %v", err)
 		}
 
 	case sig := <-interruptChan:
+		// gracefully shutdown server
 		s.log.Infof("received: %v; starting shutdown...", sig)
 
 		// wait for 5 seconds for pending requests to complete

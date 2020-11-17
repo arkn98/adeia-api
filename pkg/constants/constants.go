@@ -5,15 +5,18 @@
 package constants
 
 const (
-	// MaxReqBodySize (in bytes; default: 1MiB)
-	MaxReqBodySize = 1048576
+	// MaxReqBodySize (in bytes; default: 128KB)
+	MaxReqBodySize = 131072
 	// APIVersion represents the current major version of the API. It is used as URL prefix.
 	APIVersion = "v1"
 
-	// EmployeeIDLength represents the length of the generated employee IDs.
-	EmployeeIDLength = 6
-	// EmployeeIDChars represents the list of possible characters that can occur in an employee ID.
-	EmployeeIDChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	// EmpIDLength represents the length of the generated employee IDs.
+	EmpIDLength = 6
+	// EmpIDChars represents the list of possible characters that can occur in an employee ID.
+	EmpIDChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	// CtxQueryParamsKey is the key used to store QueryParams in the context.
+	CtxQueryParamsKey = "query_params"
 
 	// ==========
 	// Keys of env variables to override the config

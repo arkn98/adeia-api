@@ -7,67 +7,49 @@ package adeia
 import (
 	"net/http"
 
-	"adeia/pkg/errs"
+	"adeia/pkg/http/response"
 )
 
 var (
-	// ErrInvalidRequestBody is the error returned when the request body is not JSON.
-	ErrInvalidRequestBody = errs.ResponseError{
-		StatusCode: http.StatusUnsupportedMediaType,
-		ErrorCode:  "INVALID_REQUEST_BODY",
-		Message:    "Request body must be JSON",
-	}
+	// ErrUnsupportedMediaType is the error returned when the request `Content-Type`
+	// is not supported by the server.
+	ErrUnsupportedMediaType = response.NewError().
+				StatusCode(http.StatusUnsupportedMediaType).
+				Code("UNSUPPORTED_MEDIA_TYPE").
+				Msg("Content-Type must be application/json without any parameters")
 
-	// ErrInvalidJSON is the error returned when the request body contains invalid JSON.
-	ErrInvalidJSON = errs.ResponseError{
-		StatusCode: http.StatusBadRequest,
-		ErrorCode:  "INVALID_JSON",
-		Message:    "An error occurred while parsing the request body",
-	}
+	// ErrInvalidRequest is the error returned when the request is bad.
+	ErrInvalidRequest = response.NewError().
+				StatusCode(http.StatusBadRequest).
+				Code("INVALID_REQUEST").
+				Msg("Request body is malformed")
 
 	// ErrValidationFailed is the error returned when some of the fields do not conform to
 	// the validation rules. Add a list of ValidationErrors to this to specify the fields
 	// that are failing.
-	ErrValidationFailed = errs.ResponseError{
-		StatusCode: http.StatusUnprocessableEntity,
-		ErrorCode:  "VALIDATION_FAILED",
-		Message:    "Validation failed for some fields",
-	}
-
-	// ErrRequestBodyTooLarge is the error returned when the request body is too large.
-	ErrRequestBodyTooLarge = errs.ResponseError{
-		StatusCode: http.StatusRequestEntityTooLarge,
-		ErrorCode:  "REQUEST_BODY_TOO_LARGE",
-		Message:    "Request body is too large",
-	}
-
-	// ErrUnknownField is the error returned when the request body contains an unknown field.
-	ErrUnknownField = errs.ResponseError{
-		StatusCode: http.StatusBadRequest,
-		ErrorCode:  "UNKNOWN_FIELD",
-		Message:    "An unknown field is present in the request body",
-	}
-
-	// ErrDatabaseError is the error returned when a database error occurs.
-	// It is made as generic as possible, so that internals are not revealed outside.
-	ErrDatabaseError = errs.ResponseError{
-		StatusCode: http.StatusInternalServerError,
-		ErrorCode:  "DATABASE_ERROR",
-	}
-
-	// ErrResourceAlreadyExists is the error returned when a resource already
-	// exists with the specified fields.
-	ErrResourceAlreadyExists = errs.ResponseError{
-		StatusCode: http.StatusBadRequest,
-		ErrorCode:  "RESOURCE_ALREADY_EXISTS",
-		Message:    "A resource already exists with the specified fields",
-	}
+	ErrValidationFailed = response.NewError().
+				StatusCode(http.StatusBadRequest).
+				Code("VALIDATION_FAILED").
+				Msg("Validation failed for some fields")
 
 	// ErrParseReqBodyFailed is the error returned when the request body is okay,
 	// but something else happened and we cannot parse it.
-	ErrParseReqBodyFailed = errs.ResponseError{
-		StatusCode: http.StatusInternalServerError,
-		ErrorCode:  "PARSE_REQUEST_BODY_FAILED",
-		Message:    "An error occurred while parsing the request body",
-	}
+	ErrParseReqBodyFailed = response.NewError().
+				StatusCode(http.StatusInternalServerError).
+				Code("PARSE_REQUEST_BODY_FAILED").
+				Msg("An error occurred while parsing the request body")
+
+	// ErrAPIError is the error returned when an error occurs on the API side. It
+	// is made as generic as possible, so that internal details are not revealed outside.
+	ErrAPIError = response.NewError().
+			StatusCode(http.StatusInternalServerError).
+			Code("API_ERROR").
+			Msg("An error occurred while parsing the request body")
+
+	// ErrResourceAlreadyExists is the error returned when a resource already
+	// exists with the specified fields.
+	ErrResourceAlreadyExists = response.NewError().
+					StatusCode(http.StatusBadRequest).
+					Code("RESOURCE_ALREADY_EXISTS").
+					Msg("A resource already exists with the specified fields")
 )

@@ -4,7 +4,7 @@
 
 package config
 
-import "adeia/pkg/util/constants"
+import "adeia/pkg/constants"
 
 // envOverrides holds all environment value keys for overriding the config.
 var envOverrides = map[string]string{
