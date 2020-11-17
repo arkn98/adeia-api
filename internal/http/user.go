@@ -9,9 +9,9 @@ import (
 	"net/http"
 
 	"adeia"
-	"adeia/pkg/errs"
+	"adeia/pkg/constants"
+	"adeia/pkg/http/response"
 	"adeia/pkg/log"
-	"adeia/pkg/util/constants"
 	"adeia/pkg/util/httputil"
 
 	"github.com/go-chi/chi"
@@ -36,10 +36,10 @@ func (uc *UserController) Pattern() string {
 }
 
 // NewUserController creates a new UserController.
-func NewUserController(log log.Logger, us adeia.UserService) *UserController {
+func NewUserController(pattern string, log log.Logger, us adeia.UserService) *UserController {
 	uc := &UserController{
 		log:         log,
-		pattern:     "/users",
+		pattern:     pattern,
 		userService: us,
 	}
 	uc.BindRoutes()
@@ -67,8 +67,7 @@ func (uc *UserController) BindRoutes() {
 //			fmt.Println("hello")
 //		case <-ctx.Done():
 //			err := ctx.Err()
-//			fmt.Println(err)
-//			http.Error(w, err.Error(), http.StatusInternalServerError)
+//			fmt.Println("check", err)
 //		}
 //	}
 //}
@@ -91,6 +90,10 @@ func (uc *UserController) CreateUser() *ProtectedHandler {
 				return
 			}
 
+			// get query params
+			//v := r.Context().Value(constants.CtxQueryParamsKey)
+			//_, _ = v.(*httputil.QueryParams)
+
 			// validate request
 
 			user, err := uc.userService.CreateUser(
@@ -101,17 +104,22 @@ func (uc *UserController) CreateUser() *ProtectedHandler {
 				body.Designation,
 			)
 			if err != nil {
-				httputil.LogWriteErr(uc.log, httputil.RespondWithErr(w, err.(errs.ResponseError)))
+				httputil.LogWriteErr(uc.log, httputil.RespondWithErr(w, err.(*response.Error)))
 				return
 			}
 
 			w.Header().Set("Location", fmt.Sprintf(
-				"/%s/%s/%s",
+				"/%s%s/%s",
 				constants.APIVersion,
 				uc.pattern,
 				user.EmployeeID,
 			))
-			httputil.LogWriteErr(uc.log, httputil.RespondWithData(w, http.StatusCreated, user))
+			resp := response.NewResponse(
+				response.WithData(user),
+				response.WithObjectType("user"),
+				response.WithStatusCode(http.StatusCreated),
+			)
+			httputil.LogWriteErr(uc.log, httputil.Respond(w, resp))
 		},
 	}
 }

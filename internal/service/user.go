@@ -19,17 +19,18 @@ type UserService struct {
 }
 
 // NewUserService creates a new *UserService.
-func NewUserService(log log.Logger, repo adeia.UserRepo) *UserService {
-	return &UserService{log, repo}
+func NewUserService(l log.Logger, r adeia.UserRepo) *UserService {
+	return &UserService{l, r}
 }
 
-// CreateUser creates a new user if does not exist.
-func (us *UserService) CreateUser(ctx context.Context, name, email, empID, designation string) (*adeia.User, error) {
-	if u, err := us.repo.GetByEmail(ctx, email); err != nil {
-		us.log.Errorf("cannot fetch user by email: %v", err)
-		return nil, adeia.ErrDatabaseError
+// CreateUser creates a new user if it does not exist.
+func (s *UserService) CreateUser(ctx context.Context, name, email, empID, designation string) (*adeia.User, error) {
+	if u, err := s.repo.GetByEmail(ctx, email); err != nil {
+		s.log.Errorf("cannot fetch user by email: %v", err)
+		return nil, adeia.ErrAPIError
 	} else if u != nil {
-		us.log.Debug("user already exists with the provided email " + email)
+		// TODO: do not reveal that user account already exists
+		s.log.Debugf("user already exists with the provided email: %v ", email)
 		return nil, adeia.ErrResourceAlreadyExists
 	}
 
@@ -43,9 +44,9 @@ func (us *UserService) CreateUser(ctx context.Context, name, email, empID, desig
 		adeia.WithEmpID(empID),
 	)
 
-	if _, err := us.repo.Insert(ctx, user); err != nil {
-		us.log.Warnf("cannot create new user: %v", err)
-		return nil, adeia.ErrDatabaseError
+	if _, err := s.repo.Insert(ctx, user); err != nil {
+		s.log.Warnf("cannot create new user: %v", err)
+		return nil, adeia.ErrAPIError
 	}
 	return user, nil
 }

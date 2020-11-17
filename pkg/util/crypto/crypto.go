@@ -10,7 +10,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 
-	"adeia/pkg/util/constants"
+	"adeia/pkg/constants"
 
 	"github.com/alexedwards/argon2id"
 	"github.com/dchest/uniuri"
@@ -62,7 +62,7 @@ func ComparePwdHash(p, h string) (match bool, err error) {
 
 // NewEmpID generates a short, URL-friendly alpha-numeric employee ID.
 func NewEmpID() string {
-	return uniuri.NewLenChars(constants.EmployeeIDLength, []byte(constants.EmployeeIDChars))
+	return uniuri.NewLenChars(constants.EmpIDLength, []byte(constants.EmpIDChars))
 }
 
 // PasswordStrength returns the strength of a password (on a scale of 0 - 4).

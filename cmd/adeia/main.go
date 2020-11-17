@@ -15,8 +15,8 @@ import (
 	"adeia/internal/repo"
 	"adeia/internal/service"
 	"adeia/internal/store/pg"
+	"adeia/pkg/constants"
 	"adeia/pkg/log/zap"
-	"adeia/pkg/util/constants"
 	"adeia/pkg/util/ioutil"
 
 	_ "github.com/jackc/pgx/v4/stdlib" // Postgres driver
@@ -34,55 +34,54 @@ func main() {
 }
 
 func run(conf *config.Config) error {
-	logger, err := zap.New(&conf.LoggerConfig)
+	log, err := zap.New(&conf.LoggerConfig)
 	if err != nil {
 		return err
 	}
 
-	dbConn, cacheConn, err := initConnections(conf)
+	db, cache, err := initConnections(&conf.DBConfig, &conf.CacheConfig)
 	if err != nil {
-		logger.Debugf("failed to initialize connections: %v", err)
+		log.Errorf("failed to initialize connections: %v", err)
 		return err
 	}
 
 	defer func() {
-		logger.Debug("closing connections...")
-		_ = logger.Sync()
-		ioutil.CheckCloseErr(dbConn, &err)
-		ioutil.CheckCloseErr(cacheConn, &err)
+		log.Info("closing connections...")
+		err = log.Sync()
+		ioutil.CheckCloseErr(db, &err)
+		ioutil.CheckCloseErr(cache, &err)
 	}()
 
 	// init repos
-	logger.Debug("initializing repositories...")
-	userRepo := repo.NewUserRepo(dbConn)
+	log.Debug("initializing repositories...")
+	userRepo := repo.NewUserRepo(db)
 
 	// init services
-	logger.Debug("initializing services...")
-	userService := service.NewUserService(logger, userRepo)
+	log.Debug("initializing services...")
+	userService := service.NewUserService(log, userRepo)
 
 	// init controllers
-	logger.Debug("initializing controllers...")
-	userController := http.NewUserController(logger, userService)
+	log.Debug("initializing controllers...")
+	userController := http.NewUserController("/users", log, userService)
 
-	srv := server.New(&conf.ServerConfig, logger, userController)
-	srv.BindControllers()
-	srv.Serve()
+	srv := server.New(&conf.ServerConfig, log, userController)
+	srv.Start()
 
-	return nil
+	return err
 }
 
-func initConnections(conf *config.Config) (*pg.PostgresDB, *redis.Redis, error) {
-	dbConn, err := pg.New(&conf.DBConfig)
+func initConnections(d *config.DBConfig, c *config.CacheConfig) (*pg.PostgresDB, *redis.Redis, error) {
+	db, err := pg.New(d)
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot initialize connection to db: %v", err)
+		return nil, nil, fmt.Errorf("cannot initialize db connection: %v", err)
 	}
 
-	cacheConn, err := redis.New(&conf.CacheConfig)
+	cache, err := redis.New(c)
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot initialize connection to cache: %v", err)
+		return nil, nil, fmt.Errorf("cannot initialize cache connection: %v", err)
 	}
 
-	return dbConn, cacheConn, nil
+	return db, cache, nil
 }
 
 func checkErr(err error) {

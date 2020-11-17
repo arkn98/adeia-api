@@ -1,0 +1,17 @@
+codecov:
+  branch: trunk
+  strict_yaml_branch: trunk
+
+coverage:
+  status:
+    patch: off
+
+ignore:
+  - "api"
+  - "assets"
+  - "config"
+  - "docs"
+  - "resources"
+  - "scripts"
+  - "test"
+  - "web"
